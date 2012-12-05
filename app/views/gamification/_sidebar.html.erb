@@ -1,0 +1,17 @@
+<% content_for :sidebar do %>
+
+<h3>ゲーミフィケーション</h3>
+
+<div id="glist-menu">
+  <%= link_to_unless_current 'Myステータス', {action: 'index'} %><br>
+  <%= link_to_unless_current 'チュートリアル', {action: 'tutorial'} %><br>
+  <%= link_to_unless_current '獲得バッジ', {action: 'badges'} %><br>
+  <%= link_to_unless_current '評価機能', {action: 'rating'} %><br>
+  <%= link_to_unless_current 'ランキング', {action: 'rankking'} %><br>
+</div>
+
+<br><br>
+<div id="destroy">
+  <%= link_to 'ゲーミフィケーションの機能を削除する', {action: 'destroy'}, confirm: '本当によろしいですか？'%>
+</div>
+<% end %>

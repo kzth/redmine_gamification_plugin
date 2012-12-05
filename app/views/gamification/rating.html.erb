@@ -1,0 +1,27 @@
+<style>
+#rating-form {
+  font-size: 20px;
+  text-align: center;
+  padding: 60px 40px;
+}
+
+.rating-select {
+  font-size: 20px;
+}
+</style>
+
+<h2>評価機能</h2>
+
+<% unless @users.nil? %>
+  <div id="rating-form">
+  <%= form_tag({action: 'regist_rating'}) do %>
+    <%= select_tag('rate_user', options_for_select(@users), {class: 'rating-select'}) %>さんに
+    <%= select_tag('medal', options_for_select(@medals), {class: 'rating-select'}) %>を
+    <%= submit_tag '与える', {class: 'rating-select'} %>
+  <% end %>
+  </div>
+<% else %>
+  <h3>他に利用者がいないためこの機能を利用できません</h3>
+<% end %>
+
+<%= render 'sidebar' %>

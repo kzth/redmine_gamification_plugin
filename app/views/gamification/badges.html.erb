@@ -1,0 +1,20 @@
+<h2>獲得バッジ一覧</h2>
+
+<h3><%= @user.user.name %>さんの獲得バッジ</h3>
+
+<table border="1">
+  <tr>
+    <td><%= badge_image('lvl5_badge.png', @user_badges.lvl5_badge) %></td>
+    <td><%= badge_image('lvl10_badge.png', @user_badges.lvl10_badge) %></td>
+    <td><%= badge_image('lvl50_badge.png', @user_badges.lvl50_badge) %></td>
+    <td><%= badge_image('lvl100_badge.png', @user_badges.lvl100_badge) %></td>
+  </tr>
+  <tr>
+    <td><%= badge_image('tkt10_badge.png', @user_badges.tkt10_badge) %></td>
+    <td><%= badge_image('tkt50_badge.png', @user_badges.tkt50_badge) %></td>
+    <td><%= badge_image('tkt100_badge.png', @user_badges.tkt100_badge) %></td>
+    <td><%= badge_image('tkt500_badge.png', @user_badges.tkt500_badge) %></td>
+  </tr>
+</table>
+
+<%= render 'sidebar' %>

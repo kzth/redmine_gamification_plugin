@@ -1,0 +1,78 @@
+<%= stylesheet_link_tag '/index.css', plugin: 'gamification', media: 'screen' %>
+<%= javascript_include_tag '/graph/radar.js', plugin: 'gamification' %>
+<%= javascript_tag do %>
+window.onload = function() {
+  var rc = new html5jp.graph.radar('sample');
+  if (!rc) { return; }
+  var medals = <%= raw @user.gamification_medal.to_json %>;
+  var items = [
+    ['獲得メダル', medals.gamification_medal.thank_medal, medals.gamification_medal.smile_medal, medals.gamification_medal.hot_medal,
+                   medals.gamification_medal.nice_medal, medals.gamification_medal.comm_medal, medals.gamification_medal.grow_medal]
+  ];
+  var params = {
+    aCap: ['サンクスメダル', 'スマイルメダル', '熱血メダル',
+           'ナイスメダル', 'コミュニケーションメダル', '成長メダル']
+  };
+  rc.draw(items, params);
+}
+<% end %>
+
+<h2>ゲーミフィケーション</h2>
+
+<h3 id="title"><span><%= @user.user.name %></span>さんのステータス</h3>
+
+<div id="user-image">
+  <% if @user.image.nil? %>
+    <%= image_tag '/users/noimage.gif', {width: 150, height: 150, plugin: 'gamification'} %><br><br>
+    <%= form_for @user, url: {action: 'upload_image'}, html: {multipart: true} do |f| %>
+      <%= f.label :image, '画像をアップロードしてください' %>
+      <%= f.file_field :image %>
+      <%= f.submit 'アップロード' %>
+    <% end %>
+  <% else %>
+    <%= image_tag url_for(action: 'get_image', id: @user), {width: 150, height: 150} %><br><br>
+    <%= link_to '画像を削除する', {action: 'remove_image'}, confirm: '本当に削除しますか?' %><br>
+  <% end %>
+  <p>ユーザ名:<%= @user.user.login %></p>
+</div>
+
+<div id="user-info">
+  <div id="user-point">
+    <p><%= @user.point %></p> 
+    <p class="item">ポイント</p> 
+  </div>
+  <div id="user-level">
+    <p><%= @user.level %></p> 
+    <p class="item">レベル</p> 
+  </div>
+  <div id="user-ticket_count">
+    <p><%= @user.ticket_count %></p> 
+    <p class="item">チケット更新回数</p> 
+  </div>
+</div>
+
+<br><br>
+<h2 style="clear: both;">他のメンバーからもらったメダル</h2>
+
+<table border="1">
+  <tr>
+    <th>サンクス</th>
+    <th>スマイル</th>
+    <th>熱血</th>
+    <th>ナイスアクション</th>
+    <th>コミュニケーション</th>
+    <th>成長</th>
+  </tr>
+  <tr>
+    <td><%= @user.gamification_medal.thank_medal %></td>
+    <td><%= @user.gamification_medal.smile_medal %></td>
+    <td><%= @user.gamification_medal.hot_medal %></td>
+    <td><%= @user.gamification_medal.nice_medal %></td>
+    <td><%= @user.gamification_medal.comm_medal %></td>
+    <td><%= @user.gamification_medal.grow_medal %></td>
+  </tr>
+</table>
+
+<div><canvas width="600" height="500" id="sample"></canvas></div>
+
+<%= render 'sidebar' %>

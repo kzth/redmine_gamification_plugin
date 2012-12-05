@@ -1,0 +1,20 @@
+<h2>ランキング</h2>
+
+<div id="user-ranking">
+  <table border="1">
+    <tr>
+      <th>順位</th>
+      <th>ユーザ名</th>
+      <th>ポイント</th>
+    </tr>
+    <% @users.each_with_index do |user, i| %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><%= user.user.name %></td>
+        <td><%= user.point %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<%= render 'sidebar' %>

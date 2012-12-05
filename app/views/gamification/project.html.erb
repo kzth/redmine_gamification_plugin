@@ -1,0 +1,25 @@
+<h2>このプロジェクトのメンバー</h2>
+
+<table>
+  <tr>
+    <th>ユーザ名</th>
+    <th>ポイント</th>
+    <th>チケット更新回数</th>
+  </tr>
+  <% @project_users.each do |user| %>
+    <% if user.user_id == @current_user_id %>
+      <tr>
+        <td><strong><%= user.user.login %></strong></td>
+        <td><strong><%= user.point %></strong></td>
+        <td><strong><%= user.ticket_count %></strong></td>
+      </tr>
+    <% else %>
+      <tr>
+        <td><%= user.user.login %></td>
+        <td><%= user.point %></td>
+        <td><%= user.ticket_count %></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+
