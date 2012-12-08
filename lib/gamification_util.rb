@@ -20,11 +20,20 @@ module GamificationUtil
     lvl
   end
 
-  def check_badge(user_badge, lvl)
+  def check_level_badge(user_badge, lvl)
     user_badge.lvl5_badge   = 1 if 5   <= lvl
     user_badge.lvl10_badge  = 1 if 10  <= lvl
     user_badge.lvl50_badge  = 1 if 50  <= lvl
     user_badge.lvl100_badge = 1 if 100 <= lvl
+    user_badge
+  end
+
+  def check_ticket_badge(user_badge, tkt_count)
+    user_badge.tkt10_badge   = 1 if 10   <= tkt_count
+    user_badge.tkt50_badge   = 1 if 50  <= tkt_count
+    user_badge.tkt100_badge  = 1 if 100  <= tkt_count
+    user_badge.tkt500_badge  = 1 if 500 <= tkt_count
+    user_badge.tkt1000_badge = 1 if 1000 <= tkt_count
     user_badge
   end
 end
