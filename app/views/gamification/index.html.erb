@@ -1,5 +1,47 @@
 <%= stylesheet_link_tag '/index.css', plugin: 'gamification', media: 'screen' %>
+<%= stylesheet_link_tag '/jquery.gritter.css', plugin: 'gamification', media: 'screen' %>
 <%= javascript_include_tag '/graph/radar.js', plugin: 'gamification' %>
+<%= javascript_include_tag '/jquery.gritter.min.js', plugin: 'gamification' %>
+
+<script>
+var gPoint = <%= raw @point %>;
+var gLevel = <%= raw @level %>;
+var gTicket = <%= raw @ticket %>;
+$.extend($.gritter.options, {
+  position: 'bottom-right',
+  fade_in_speen: 'medium',
+  fade_out_speed: 2000,
+  time: 6000
+});
+
+if(gPoint != 0) {
+  window.addEventListener('load', function() {
+    $.gritter.add({
+      title: 'ステータス更新情報',
+      text: gPoint + 'ポイント追加されました'
+    });
+  }, false);
+}
+
+if(gLevel != 0) {
+  window.addEventListener('load', function() {
+    $.gritter.add({
+      title: 'ステータス更新情報',
+      text: gLevel + 'レベルにアップしました'
+    });
+  }, false);
+}
+
+if(gTicket != 0) {
+  window.addEventListener('load', function() {
+    $.gritter.add({
+      title: 'ステータス更新情報',
+      text: 'チケット回数が' + gTicket + '回追加されました'
+    });
+  }, false);
+}
+
+</script>
 
 <h2>ゲーミフィケーション</h2>
 
@@ -8,28 +50,33 @@
 <div id="user-image">
   <% if @user.image.nil? %>
     <%= image_tag '/users/noimage.gif', {width: 150, height: 150, plugin: 'gamification'} %><br><br>
-    <%= form_for @user, url: {action: 'upload_image'}, html: {multipart: true} do |f| %>
-      <%= f.label :image, '画像をアップロードしてください' %>
-      <%= f.file_field :image %>
-      <%= f.submit 'アップロード' %>
-    <% end %>
   <% else %>
     <%= image_tag url_for(action: 'get_image', id: @user), {width: 150, height: 150} %><br><br>
-    <%= link_to '画像を削除する', {action: 'remove_image'}, confirm: '本当に削除しますか?' %><br>
+  <% end %>
+  <%= link_to 'ユーザー情報設定', {action: 'setting'} %><br><br>
+
+  <% if @user.goal %>
+    <h4><%= @user.user.login %>さんの目標</h3>
+    <div id="user-goal">
+      <%= @user.goal %>
+    </div>
   <% end %>
 </div>
 
 <div id="user-info">
   <div id="user-point">
     <p><%= @user.point %></p> 
+    <p>今月 +<%= @user.monthly_point %></p>
     <p class="item">ポイント</p> 
   </div>
   <div id="user-level">
     <p><%= @user.level %></p> 
+    <p>次のレベルまで<%= @user.next_level %></p>
     <p class="item">レベル</p> 
   </div>
   <div id="user-ticket_count">
     <p><%= @user.ticket_count %></p> 
+    <p>今月 +<%= @user.monthly_ticket_count %></p>
     <p class="item">チケット更新回数</p> 
   </div>
 </div>

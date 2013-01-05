@@ -7,17 +7,6 @@ module Hooks
 
     def controller_issues_edit_after_save(context={})
       if context[:params] && context[:params][:issue]
-        if User.current.allowed_to?(:assign_deliverable_to_issue, context[:issue].project)
-          if context[:params][:issue][:deliverable_id].present?
-            deliverable = Deliverable.find_by_id(context[:params][:issue][:deliverable_id])
-            if deliverable.contract.project == context[:issue].project
-              context[:issue].deliverable = deliverable
-            end
-
-          else
-            context[:issue].deliverable = nil
-          end
-        end
         current_user_id = User.current.id
         project_id = Issue.find(context[:params][:id]).project_id
 
@@ -26,21 +15,28 @@ module Hooks
           user = Gamification.find_by_user_id(current_user_id)
           user_badge = GamificationBadge.find_by_user_id(current_user_id)
 
+          # initializei monthly
+          if user.differ_month
+            user.monthly_init
+          end
+
+          # user update
           user.up_point(10)
+          user.up_ticket_count
           
           # check level
           old_lvl = user.level
-          new_lvl = decide_level(user.point)
+          new_lvl, user.next_level = decide_level(user.point)
           user.level = check_level(old_lvl, new_lvl)
 
           # ticket count up
-          user.up_ticket_count
           new_badge = check_ticket_badge(user_badge, user.ticket_count)
 
           # update user badge
           new2_badge = check_level_badge(new_badge, user.level)
           new2_badge.save
 
+          user.update_date
           user.save
         end
 
@@ -52,6 +48,10 @@ module Hooks
           user_project.save
         end
 
+        # GamificationTut DBの更新
+        if GamificationTut.exists?({user_id: current_user_id})
+          GamificationTut.update_flag(current_user_id, :edit_tkt_f)
+        end
       end
 
       return ''

@@ -17,7 +17,8 @@ module GamificationUtil
       total = total - up_point
       up_point = up_point * 1.2
     end
-    lvl
+    diff = up_point - total
+    return lvl, diff
   end
 
   def check_level_badge(user_badge, lvl)

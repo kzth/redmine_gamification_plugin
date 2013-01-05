@@ -10,7 +10,45 @@ class GamificationController < ApplicationController
 
   def index
     @user = Gamification.find_by_user_id(User.current.id)
-    p @user.gamification_medal
+    if session[:point]
+      @point = @user.point.to_i - session[:point]
+      session[:point] = @user.point
+    else
+      session[:point] = @user.point
+    end
+
+    if session[:level]
+      diff_level = @user.level.to_i - session[:level]
+      p diff_level
+      unless diff_level == 0
+        @level = @user.level
+      else
+        @level = 0
+      end
+      session[:level] = @user.level
+    else
+      session[:level] = @user.level
+    end
+
+    if session[:ticket]
+      @ticket = @user.ticket_count.to_i - session[:ticket]
+      session[:ticket] = @user.ticket_count
+    else
+      session[:ticket] = @user.ticket_count
+    end
+  end
+
+  def setting
+    @user = Gamification.find_by_user_id(User.current.id)
+  end
+
+  def save_goal
+    user = Gamification.find_by_user_id(User.current.id)
+    user.goal = params[:goal]
+    if user.save
+      flash[:notice] = '更新しました'
+      redirect_to action: 'setting'
+    end
   end
 
   def get_image
@@ -18,12 +56,25 @@ class GamificationController < ApplicationController
     send_data(@user.image, type: 'image/png', disposition: 'inline')
   end
 
+  def user_image
+    @user_image = Gamification.find_by_user_id(params[:uid].to_i)
+    send_data(@user_image.image, disposition: 'inline')
+  end
+
   def upload_image
-    user = Gamification.find_by_user_id(User.current.id)
+    current_user_id = User.current.id
+    user = Gamification.find_by_user_id(current_user_id)
     user.image = params[:gamification][:image].read
+
     if user.save
-      flash[:notice] = '画像をアップロードしました'
-      redirect_to action: 'index'
+
+      # GamificationTut DBの更新
+      if GamificationTut.exists?({user_id: current_user_id})
+        GamificationTut.update_flag(current_user_id, :up_image_f)
+      end
+
+      flash[:notice] = '更新しました'
+      redirect_to action: 'setting'
     end
   end
 
@@ -31,7 +82,7 @@ class GamificationController < ApplicationController
     user = Gamification.find_by_user_id(User.current.id)
     user.image = nil
     if user.save
-      redirect_to action: 'index'
+      redirect_to action: 'setting'
     end
   end
 
@@ -46,7 +97,13 @@ class GamificationController < ApplicationController
       project = GamificationProject.new
       project.user_id = current_user_id
       project.project_id = project_id
-      project.save
+
+      if project.save
+        # GamificationTut DBの更新
+        if GamificationTut.exists?({user_id: current_user_id})
+          GamificationTut.update_flag(current_user_id, :project_f)
+        end
+      end
     end
 
     unless GamificationProject.exists?({user_id: current_user_id, project_id: project_id})
@@ -67,6 +124,7 @@ class GamificationController < ApplicationController
 
     # user create
     user = Gamification.new
+    user.update_at = Date.today
     user.user_id = current_user_id
 
     # user project create
@@ -84,6 +142,13 @@ class GamificationController < ApplicationController
       redirect_to action: 'error'
     end
 
+    # tut table create
+    user_tut = GamificationTut.new({user_id: current_user_id})
+    unless user_tut.save
+      redirect_to action: 'error'
+    end
+
+    # medal table create
     user_medal = GamificationMedal.new({user_id: current_user_id})
     unless user_medal.save
       redirect_to 'error'
@@ -98,6 +163,16 @@ class GamificationController < ApplicationController
   end
 
   def tutorial
+    @user = Gamification.find_by_user_id(User.current.id)
+    user_tuts = GamificationTut.find_by_user_id(@user.user_id)
+    @tuts = [
+              {title: "プロジェクトに参加する", flag: user_tuts.project_f},
+              {title: "新しいチケットを作成する", flag: user_tuts.new_tkt_f},
+              {title: "チケットを更新する", flag: user_tuts.edit_tkt_f},
+              {title: "wikiを更新する", flag: user_tuts.edit_wiki_f},
+              {title: "トップページに画像をアップロードする", flag: user_tuts.up_image_f},
+              {title: "メンバーを評価する", flag: user_tuts.rate_member_f}
+            ]
   end
 
   def badges
@@ -117,25 +192,40 @@ class GamificationController < ApplicationController
     end
   end
 
-  # ajax 
+  # ajax
   def search
     @user = Gamification.find_by_user_id(params[:rate_user].to_i)
   end
 
   def regist_rating
+    current_user_id = User.current.id
     user = GamificationMedal.find_by_user_id(params[:rate_user].to_i)
     medal = params[:medal]
     mon_medal = 'monthly_'.concat(medal)
     user[medal] += 1
     user[mon_medal] += 1
     if user.save
+
+      # GamificationTut DBの更新
+      if GamificationTut.exists?({user_id: current_user_id})
+        GamificationTut.update_flag(current_user_id, :rate_member_f)
+      end
+
       flash[:notice] = '投票しました'
       redirect_to action: 'rating'
     end
   end
 
-  def rankking
-    @users = Gamification.order("point DESC").limit(10)
+  def ranking
+    case params[:type]
+    when 'total'
+      @users = Gamification.order("point DESC").limit(20)
+    when 'monthly'
+      @users = Gamification.order("monthly_point DESC").limit(20)
+    when 'badeges'
+    else
+      @users = Gamification.order("point DESC").limit(20)
+    end
   end
 
   def destroy
@@ -143,7 +233,8 @@ class GamificationController < ApplicationController
     user = Gamification.find_by_user_id(current_user_id)
     user_badge = GamificationBadge.find_by_user_id(current_user_id)
 
-    if user.destroy && user_badge.destroy && GamificationProject.destroy_all({user_id: current_user_id})
+    if user.destroy && user_badge.destroy && GamificationProject.destroy_all({user_id: current_user_id}) &&
+       GamificationMedal.destroy({user_id: current_user_id})
       flash[:notice] = 'ゲーミフィケーションの機能を削除しました'
       redirect_to action: 'entry'
     else

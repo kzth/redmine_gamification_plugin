@@ -1,0 +1,24 @@
+<h2>ユーザー情報設定</h2>
+
+<h3>画像アップロード</h3>
+<% if @user.image.nil? %>
+  <%= image_tag '/users/noimage.gif', {width: 150, height: 150, plugin: 'gamification'} %><br><br>
+  <%= form_for @user, url: {action: 'upload_image'}, html: {multipart: true} do |f| %>
+    <%= f.label :image, '画像をアップロードしてください' %>
+    <%= f.file_field :image %>
+    <%= f.submit '更新' %>
+  <% end %>
+<% else %>
+  <%= image_tag url_for(action: 'get_image', id: @user), {width: 150, height: 150} %><br><br>
+  <%= link_to '画像を削除する', {action: 'remove_image'}, confirm: '本当に削除しますか?' %><br>
+<% end %>
+
+<h3><%= @user.user.login %>さんの目標を設定</h3>
+<%= form_tag({action: 'save_goal'}) do %>
+  <%= text_area_tag 'goal', @user.goal, {cols: 40, rows: 10} %>
+  <%= submit_tag '更新' %>
+<% end %>
+<br><br>
+<%= link_to 'Myステータスへ', {action: 'index'} %>
+
+<%= render 'sidebar' %>

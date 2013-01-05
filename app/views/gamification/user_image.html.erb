@@ -1,0 +1,6 @@
+<% if @user_image.image != nil %>
+<%= image_tag url_for(action: 'user_image', id: @user_image), {width: 150, height: 150} %>
+<% else %>
+<%= image_tag '/users/noimage.gif', {width: 150, height: 150, plugin: 'gamification'} %><br><br>
+<% end %>
+
