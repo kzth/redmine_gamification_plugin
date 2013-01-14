@@ -173,6 +173,11 @@ class GamificationController < ApplicationController
               {title: "トップページに画像をアップロードする", flag: user_tuts.up_image_f},
               {title: "メンバーを評価する", flag: user_tuts.rate_member_f}
             ]
+
+    # アジャイルチェックリスト
+    #@check_list = [
+    #  {title: "", flag: }
+    #]
   end
 
   def badges
@@ -189,6 +194,21 @@ class GamificationController < ApplicationController
     @users = {}
     users.each do |user|
       @users[user.user.login] = user.user_id unless user.user_id == my_account.user_id
+    end
+  end
+
+  def rating_ticket
+    fu = User.current.id
+    return unless tu = params[:assigned_to_id]
+    case params[:rating_num].to_i
+    when 1
+    when 2
+    when 3
+    when 4
+    when 5
+    when 6
+    else
+      return
     end
   end
 
@@ -217,15 +237,14 @@ class GamificationController < ApplicationController
   end
 
   def ranking
-    case params[:type]
-    when 'total'
-      @users = Gamification.order("point DESC").limit(20)
-    when 'monthly'
-      @users = Gamification.order("monthly_point DESC").limit(20)
-    when 'badeges'
-    else
-      @users = Gamification.order("point DESC").limit(20)
-    end
+    @users = Gamification.order("point DESC").limit(20)
+  end
+
+  def ranking_monthly
+    @users = Gamification.order("monthly_point DESC").limit(20)
+  end
+
+  def ranking_badge
   end
 
   def destroy
