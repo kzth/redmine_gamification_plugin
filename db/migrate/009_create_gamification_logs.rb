@@ -4,8 +4,8 @@ class CreateGamificationLogs < ActiveRecord::Migration
       t.integer :issue_id
       t.integer :from_user_id
       t.integer :to_user_id
-      t.integer :rating_id
-      t.datetime :datetime
+      t.string :rating_medal
+      t.date :updated_at
     end
   end
 end

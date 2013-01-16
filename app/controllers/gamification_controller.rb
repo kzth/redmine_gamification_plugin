@@ -9,7 +9,14 @@ class GamificationController < ApplicationController
   before_filter :find_project, only: [:project]
 
   def index
-    @user = Gamification.find_by_user_id(User.current.id)
+    current_user_id = User.current.id
+
+    @user = Gamification.find_by_user_id(current_user_id)
+
+    if GamificationLog.exists?({ to_user_id: current_user_id})
+      @medal_logs = GamificationLog.where('to_user_id = ?', current_user_id).order(:updated_at).reverse_order.limit(10)
+    end
+
     if session[:point]
       @point = @user.point.to_i - session[:point]
       session[:point] = @user.point
@@ -198,18 +205,37 @@ class GamificationController < ApplicationController
   end
 
   def rating_ticket
-    fu = User.current.id
+    current_user_id = fu = User.current.id
     return unless tu = params[:assigned_to_id]
-    case params[:rating_num].to_i
-    when 1
-    when 2
-    when 3
-    when 4
-    when 5
-    when 6
-    else
-      return
+
+    # 評価メダルを与える
+    user = GamificationMedal.find_by_user_id(tu.to_i)
+    medal = params[:medal]
+    mon_medal = 'monthly_'.concat(medal)
+    user[medal] += 1
+    user[mon_medal] += 1
+
+    # 評価メダルログ
+    mdlog = GamificationLog.new
+    mdlog.issue_id = params[:issue_id].to_i
+    mdlog.from_user_id = fu.to_i 
+    mdlog.to_user_id = tu.to_i
+    mdlog.rating_medal = medal
+    mdlog.updated_at = Date.today
+
+    if user.save && mdlog.save
+
+      # GamificationTut DBの更新
+      if GamificationTut.exists?({user_id: current_user_id})
+        GamificationTut.update_flag(current_user_id, :rate_member_f)
+      end
+
+      # ajaxで実装
+
+      #flash[:notice] = '投票しました'
+      #redirect_to action: 'rating'
     end
+
   end
 
   # ajax
@@ -245,6 +271,7 @@ class GamificationController < ApplicationController
   end
 
   def ranking_badge
+    
   end
 
   def destroy

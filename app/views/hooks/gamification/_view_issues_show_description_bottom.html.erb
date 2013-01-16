@@ -1,16 +1,20 @@
-<br />
-<h3>このチケットを評価する</h3>
-<form>
-  <select name="rating_num">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-  </select>
-  <input type="hidden" name="issue_id" value="<%= @issue.id %>">
-  <input type="hidden" name="assigned_to_id" value="<%= @issue.assigned_to_id %>">
-  <input type="submit" value="評価する">
-</form>
-<%= p @issue %>
+<% if @issue.assigned_to_id %>
+  <% unless @issue.assigned_to_id == User.current.id%>
+    <br />
+    <h3>このチケットの担当者を評価する</h3>
+    <form action="/gamification/rating_ticket" method="get" data-remote="true">
+      <select name="medal">
+        <option value="thank_medal">サンクスメダル</option>
+        <option value="smile_medal">スマイルメダル</option>
+        <option value="hot_medal">熱血メダル</option>
+        <option value="nice_medal">ナイスアクションメダル</option>
+        <option value="comm_medal">コミュニケーションメダル</option>
+        <option value="grow_medal">成長メダル</option>
+      </select>
+      <input type="hidden" name="issue_id" value="<%= @issue.id %>">
+      <input type="hidden" name="assigned_to_id" value="<%= @issue.assigned_to_id %>">
+      <input type="submit" value="評価する" id="subbtn">
+      <span id="g_notice" style="color: red;"></span>
+    </form>
+  <% end %>
+<% end %>

@@ -120,6 +120,28 @@ if(gTicket != 0) {
   }
   <% end %>
   <div><canvas width="600" height="500" id="sample"></canvas></div>
+
+  <!-- メダルログ情報 -->
+  <div id="medal-log">
+    <% unless @medal_logs.nil? %>
+    <table border="1">
+      <tr>
+        <th>チケット番号</th>
+        <th>贈呈者</th>
+        <th>メダル</th>
+        <th>日付</th>
+      </tr>
+      <% @medal_logs.each do |log| %>
+        <tr>
+          <td><%= log.issue_id %></td>
+          <td><%= log.from_user_id %></td>
+          <td><%= log.rating_medal %></td>
+          <td><%= log.updated_at %></td>
+        </tr>
+      <% end %>
+    </table>
+    <% end %>
+  </div>
 </div>
 
 <%= render 'sidebar' %>
