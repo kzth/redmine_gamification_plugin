@@ -15,7 +15,7 @@ div#tuts-list div {
 
 
 
-<h2>チュートリアル機能</h2>
+<h2>ゲーミフィケーション機能チュートリアル</h2>
 
 <div id="tuts-list">
 <% @tuts.each do |tut| %>
@@ -23,7 +23,7 @@ div#tuts-list div {
     <div><%= image_tag('/tutorial/batsu.png', {width: 20, height: 20, plugin: 'gamification'}) %>
     <%= tut[:title] %></div>
   <% elsif tut[:flag] == 1 %>
-    <div style="background-color: #dcdcdc;"><%= image_tag('/tutorial/check.png', {width: 20, height: 20, plugin: 'gamification'}) %>
+    <div style="background-color: #dcdcdc; text-decoration: line-through;"><%= image_tag('/tutorial/check.png', {width: 20, height: 20, plugin: 'gamification'}) %>
     <%= tut[:title] %></div>
   <% end %>
 <% end %>

@@ -21,47 +21,49 @@ h3#title {
 #user-point {
   background-color: #FF8080;
   float: left;
-  width: 150px;
+  width: 170px;
   margin-right: 15px;
   margin-left: 15px;
   border-radius: 10px;
-}
-
-#user-point p:first-child {
-  font-size: 50px;
-  text-align: center;
 }
 
 #user-level {
   background-color: #FFFF80;
   float: left;
-  width: 150px;
+  width: 170px;
   margin-right: 15px;
   margin-left: 15px;
   border-radius: 10px;
-}
-
-#user-level p:first-child {
-  font-size: 50px;
-  text-align: center;
 }
 
 #user-ticket_count {
   background-color: #80FF80;
   float: left;
-  width: 150px;
+  width: 170px;
   margin-right: 15px;
   margin-left: 15px;
   border-radius: 10px;
 }
 
-#user-ticket_count p:first-child {
+.item-sub {
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+ .item-title {
   font-size: 50px;
   text-align: center;
 }
 
 #user-info .item {
   padding-left: 10px;
-  font-size: 15px;
-  font-style: bold;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#user-goal {
+  border: solid 3px #999999;
+  padding: 5px;
+  height: 150px;
+  width: 140px;
 }

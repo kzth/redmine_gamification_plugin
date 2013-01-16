@@ -53,31 +53,32 @@ if(gTicket != 0) {
   <% else %>
     <%= image_tag url_for(action: 'get_image', id: @user), {width: 150, height: 150} %><br><br>
   <% end %>
-  <%= link_to 'ユーザー情報設定', {action: 'setting'} %><br><br>
 
   <% if @user.goal %>
-    <h4><%= @user.user.login %>さんの目標</h3>
     <div id="user-goal">
+      <h4><%= @user.user.login %>さんの目標</h3>
       <%= @user.goal %>
     </div>
   <% end %>
+  <br>
+  <%= link_to 'ユーザー情報設定', {action: 'setting'} %><br><br>
 </div>
 
 <div id="user-info">
   <div id="user-point">
-    <p><%= @user.point %></p> 
-    <p>今月 +<%= @user.monthly_point %></p>
-    <p class="item">ポイント</p> 
+    <p class="item">ポイント</p>
+    <p class="item-title"><%= @user.point %></p>
+    <p class="item-sub">今月 +<span style="font-weight: bold;"><%= @user.monthly_point %></span>ポイント</p>
   </div>
   <div id="user-level">
-    <p><%= @user.level %></p> 
-    <p>次のレベルまで<%= @user.next_level %></p>
-    <p class="item">レベル</p> 
+    <p class="item">レベル</p>
+    <p class="item-title"><%= @user.level %></p>
+    <p class="item-sub">次のレベルまで<span style="font-weight: bold;"><%= @user.next_level %></span>ポイント</p>
   </div>
   <div id="user-ticket_count">
-    <p><%= @user.ticket_count %></p> 
-    <p>今月 +<%= @user.monthly_ticket_count %></p>
-    <p class="item">チケット更新回数</p> 
+    <p class="item">チケット更新回数</p>
+    <p class="item-title"><%= @user.ticket_count %></p>
+    <p class="item-sub">今月 +<span style="font-weight: bold;"><%= @user.monthly_ticket_count %></span>回</p>
   </div>
 </div>
 
@@ -126,17 +127,17 @@ if(gTicket != 0) {
     <% unless @medal_logs.nil? %>
     <table border="1">
       <tr>
+        <th>日付</th>
         <th>チケット番号</th>
         <th>贈呈者</th>
         <th>メダル</th>
-        <th>日付</th>
       </tr>
       <% @medal_logs.each do |log| %>
         <tr>
-          <td><%= log.issue_id %></td>
-          <td><%= log.from_user_id %></td>
-          <td><%= log.rating_medal %></td>
           <td><%= log.updated_at %></td>
+          <td><%= link_to 'チケット番号' + log.issue_id.to_s, issue_path(log.issue_id) %></td>
+          <td><%= log.user.login %></td>
+          <td><%= log.rating_medal %></td>
         </tr>
       <% end %>
     </table>

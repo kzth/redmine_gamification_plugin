@@ -1,4 +1,4 @@
-# coding: utf-8
+#coding: utf-8
 
 class GamificationController < ApplicationController
   unloadable
@@ -271,7 +271,11 @@ class GamificationController < ApplicationController
   end
 
   def ranking_badge
-    
+    @users = Gamification.order("badge_count DESC").limit(20)
+  end
+
+  def member
+    @users = Gamification.all
   end
 
   def destroy
