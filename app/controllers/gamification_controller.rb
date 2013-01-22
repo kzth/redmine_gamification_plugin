@@ -264,14 +264,16 @@ class GamificationController < ApplicationController
 
   def ranking
     @users = Gamification.order("point DESC").limit(20)
+    @users_mon = Gamification.order("monthly_point DESC").limit(20)
+    @users_bad = Gamification.order("badge_count DESC").limit(20)
   end
 
   def ranking_monthly
-    @users = Gamification.order("monthly_point DESC").limit(20)
+    @users_mon = Gamification.order("monthly_point DESC").limit(20)
   end
 
   def ranking_badge
-    @users = Gamification.order("badge_count DESC").limit(20)
+    @users_bad = Gamification.order("badge_count DESC").limit(20)
   end
 
   def member

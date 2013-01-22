@@ -1,28 +1,98 @@
+<%= stylesheet_link_tag 'jTabs.css', plugin: 'gamification', medai: 'screen' %>
+<%= stylesheet_link_tag 'table.css', plugin: 'gamification', medai: 'screen' %>
+<%= javascript_include_tag '/jTabs.js', plugin: 'gamification' %>
+
+<script>
+$(document).ready(function(){
+    $("ul.tabs").jTabs({content: ".tabs_content", animate: true});
+});
+</script>
+
 <h2>ランキング</h2>
 
-<div id="user-ranking">
-  <ul id="ranking-list">
-    <li><%= link_to '全体', {action: 'ranking'} %></li>
-    <li><%= link_to '月間', {action: 'ranking_monthly'} %></li>
-    <li><%= link_to 'バッジ', {action: 'ranking_badge'} %></li>
+<div class="clear"></div>
+<div id="user-ranking" class="wrap">
+  <ul id="ranking-list" class="tabs">
+    <li class="active"><a href="#">全体ポイント</a></li>
+    <li><a href="#">月間ポイント</a></li>
+    <li><a href="#">バッジ</a></li>
   </ul>
-  <table border="1">
-    <tr>
-      <th>順位</th>
-      <th>ユーザ名</th>
-      <th>ポイント</th>
-    </tr>
-    <% @users.each_with_index do |user, i| %>
-      <tr>
-        <td><%= i + 1 %></td>
-        <td><%= user.user.login %></td>
-        <td><%= user.point %></td>
-      </tr>
-    <% end %>
-  </table>
+  <div class="clear"></div>
+  <div class="tabs_content">
+    <div>
+      <h3>全体ポイントランキング</h3>
+      <table class="bordered">
+        <colgroup>
+          <col width="100px">
+          <col width="150px">
+          <col width="150px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>順位</th>
+            <th>ユーザ名</th>
+            <th>ポイント</th>
+          </tr>
+        </thead>
+        <% @users.each_with_index do |user, i| %>
+          <tr>
+          <td><%= i + 1 %></td>
+          <td><%= user.user.login %></td>
+          <td><%= user.point %></td>
+        </tr>
+      <% end %>
+      </table>
+    </div>
 
-  
+    <div>
+      <h3>月間ポイントランキング</h3>
+      <table class="bordered">
+        <colgroup>
+          <col width="100px">
+          <col width="150px">
+          <col width="150px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>順位</th>
+            <th>ユーザ名</th>
+            <th>月間ポイント</th>
+          </tr>
+        </thead>
+        <% @users_mon.each_with_index do |user, i| %>
+          <tr>
+          <td><%= i + 1 %></td>
+          <td><%= user.user.login %></td>
+          <td><%= user.monthly_point %></td>
+        </tr>
+      <% end %>
+      </table>
+    </div>
 
+    <div>
+      <h3>バッジ数ランキング</h3>
+      <table class="bordered">
+        <colgroup>
+          <col width="100px">
+          <col width="150px">
+          <col width="150px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>順位</th>
+            <th>ユーザ名</th>
+            <th>バッジ数</th>
+          </tr>
+        </thead>
+        <% @users_bad.each_with_index do |user, i| %>
+          <tr>
+          <td><%= i + 1 %></td>
+          <td><%= user.user.login %></td>
+          <td><%= user.badge_count %></td>
+        </tr>
+      <% end %>
+      </table>
+    </div>
 </div>
 
 <%= render 'sidebar' %>

@@ -1,12 +1,15 @@
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <%= stylesheet_link_tag '/index.css', plugin: 'gamification', media: 'screen' %>
 <%= stylesheet_link_tag '/jquery.gritter.css', plugin: 'gamification', media: 'screen' %>
+<%= stylesheet_link_tag '/jTabs.css', plugin: 'gamification', media: 'screen' %>
 <%= javascript_include_tag '/graph/radar.js', plugin: 'gamification' %>
 <%= javascript_include_tag '/jquery.gritter.min.js', plugin: 'gamification' %>
+<%= javascript_include_tag '/jTabs.js', plugin: 'gamification' %>
 
 <script>
-var gPoint = <%= raw @point %>;
-var gLevel = <%= raw @level %>;
-var gTicket = <%= raw @ticket %>;
+var gPoint = <%= raw @point ? @point : 0 %>;
+var gLevel = <%= raw @level ? @level : 0 %>;
+var gTicket = <%= raw @ticket ? @ticket : 0 %>;
 $.extend($.gritter.options, {
   position: 'bottom-right',
   fade_in_speen: 'medium',
@@ -41,107 +44,127 @@ if(gTicket != 0) {
   }, false);
 }
 
+// jTabsの設定
+$(document).ready(function(){
+    $("ul.tabs").jTabs({content: ".tabs_content", animate: true});
+});
+
 </script>
 
 <h2>ゲーミフィケーション</h2>
 
 <h3 id="title"><span><%= @user.user.name %></span>さんのステータス</h3>
 
-<div id="user-image">
-  <% if @user.image.nil? %>
-    <%= image_tag '/users/noimage.gif', {width: 150, height: 150, plugin: 'gamification'} %><br><br>
+<div class="wrap">
+  <div id="user-image">
+    <% if @user.image.nil? %>
+      <%= image_tag '/users/noimage.gif', {width: 150, height: 150, plugin: 'gamification'} %><br><br>
   <% else %>
-    <%= image_tag url_for(action: 'get_image', id: @user), {width: 150, height: 150} %><br><br>
+      <%= image_tag url_for(action: 'get_image', id: @user), {width: 150, height: 150} %><br><br>
   <% end %>
 
-  <% if @user.goal %>
-    <div id="user-goal">
+    <% if @user.goal %>
+      <div id="user-goal">
       <h4><%= @user.user.login %>さんの目標</h3>
       <%= @user.goal %>
     </div>
   <% end %>
-  <br>
-  <%= link_to 'ユーザー情報設定', {action: 'setting'} %><br><br>
+    <br>
+    <%= link_to 'ユーザー情報設定', {action: 'setting'} %><br><br>
+  </div>
+
+  <div id="user-info">
+    <div id="user-point">
+      <p class="item">ポイント</p>
+      <p class="item-title"><%= @user.point %></p>
+      <p class="item-sub">今月 +<span style="font-weight: bold;"><%= @user.monthly_point %></span>ポイント</p>
+    </div>
+    <div id="user-level">
+      <p class="item">レベル</p>
+      <p class="item-title"><%= @user.level %></p>
+      <p class="item-sub">次のレベルまで<span style="font-weight: bold;"><%= @user.next_level %></span>ポイント</p>
+    </div>
+    <div id="user-ticket_count">
+      <p class="item">チケット更新回数</p>
+      <p class="item-title"><%= @user.ticket_count %></p>
+      <p class="item-sub">今月 +<span style="font-weight: bold;"><%= @user.monthly_ticket_count %></span>回</p>
+    </div>
+  </div>
 </div>
+<div class="clear"></div>
 
-<div id="user-info">
-  <div id="user-point">
-    <p class="item">ポイント</p>
-    <p class="item-title"><%= @user.point %></p>
-    <p class="item-sub">今月 +<span style="font-weight: bold;"><%= @user.monthly_point %></span>ポイント</p>
-  </div>
-  <div id="user-level">
-    <p class="item">レベル</p>
-    <p class="item-title"><%= @user.level %></p>
-    <p class="item-sub">次のレベルまで<span style="font-weight: bold;"><%= @user.next_level %></span>ポイント</p>
-  </div>
-  <div id="user-ticket_count">
-    <p class="item">チケット更新回数</p>
-    <p class="item-title"><%= @user.ticket_count %></p>
-    <p class="item-sub">今月 +<span style="font-weight: bold;"><%= @user.monthly_ticket_count %></span>回</p>
-  </div>
-</div>
+<br>
+<h2>他のメンバーからもらったメダル</h2>
+<div class="wrap">
+  <ul class="tabs">
+    <li class="active"><a href="#">獲得メダル</a></li>
+    <li><a href="#">メダル履歴</a></li>
+  </ul>
+  <div class="clear"></div>
+  <div class="tabs_content">
 
-<div id="medal-info">
-  <h2>他のメンバーからもらったメダル</h2>
-  
-  <table border="1">
-    <tr>
-      <th>サンクス</th>
-      <th>スマイル</th>
-      <th>熱血</th>
-      <th>ナイスアクション</th>
-      <th>コミュニケーション</th>
-      <th>成長</th>
-    </tr>
-    <tr>
-      <td><%= @user.gamification_medal.thank_medal %></td>
-      <td><%= @user.gamification_medal.smile_medal %></td>
-      <td><%= @user.gamification_medal.hot_medal %></td>
-      <td><%= @user.gamification_medal.nice_medal %></td>
-      <td><%= @user.gamification_medal.comm_medal %></td>
-      <td><%= @user.gamification_medal.grow_medal %></td>
-    </tr>
-  </table>
-  
-  <%= javascript_tag do %>
-  window.onload = function() {
-    var rc = new html5jp.graph.radar('sample');
-    if (!rc) { return; }
-    var medals = <%= raw @user.gamification_medal.to_json %>;
-    var items = [
-      ['獲得メダル', medals.gamification_medal.thank_medal, medals.gamification_medal.smile_medal, medals.gamification_medal.hot_medal,
-                     medals.gamification_medal.nice_medal, medals.gamification_medal.comm_medal, medals.gamification_medal.grow_medal]
-    ];
-    var params = {
-      aCap: ['サンクスメダル', 'スマイルメダル', '熱血メダル',
-             'ナイスメダル', 'コミュニケーションメダル', '成長メダル']
-    };
-    rc.draw(items, params);
-  }
-  <% end %>
-  <div><canvas width="600" height="500" id="sample"></canvas></div>
+    <div id="medal-info">
 
-  <!-- メダルログ情報 -->
-  <div id="medal-log">
-    <% unless @medal_logs.nil? %>
-    <table border="1">
-      <tr>
-        <th>日付</th>
-        <th>チケット番号</th>
-        <th>贈呈者</th>
-        <th>メダル</th>
-      </tr>
-      <% @medal_logs.each do |log| %>
+      <table border="1">
+        <colgroup span="1" style="width:100px;backgroud-color: #111111;">
+        <colgroup span="1" style="width:100px;backgroud-color: #111111;">
+        <colgroup span="1" style="width:100px;backgroud-color: #111111;">
+        <colgroup span="1" style="width:100px;backgroud-color: #111111;">
+        <colgroup span="1" style="width:100px;backgroud-color: #111111;">
+        <colgroup span="1" style="width:100px;backgroud-color: #111111;">
         <tr>
-          <td><%= log.updated_at %></td>
-          <td><%= link_to 'チケット番号' + log.issue_id.to_s, issue_path(log.issue_id) %></td>
-          <td><%= log.user.login %></td>
-          <td><%= log.rating_medal %></td>
+          <th>サンクス</th>
+          <th>スマイル</th>
+          <th>熱血</th>
+          <th>ナイスアクション</th>
+          <th>コミュニケーション</th>
+          <th>成長</th>
         </tr>
-      <% end %>
-    </table>
+        <tr>
+          <td><%= @user.gamification_medal.thank_medal %></td>
+          <td><%= @user.gamification_medal.smile_medal %></td>
+          <td><%= @user.gamification_medal.hot_medal %></td>
+          <td><%= @user.gamification_medal.nice_medal %></td>
+          <td><%= @user.gamification_medal.comm_medal %></td>
+          <td><%= @user.gamification_medal.grow_medal %></td>
+        </tr>
+      </table>
+
+      <%= javascript_tag do %>
+        window.onload = function() {
+      var rc = new html5jp.graph.radar('sample');
+      if (!rc) { return; }
+      var medals = <%= raw @user.gamification_medal.to_json %>;
+      var items = [
+      ['獲得メダル', medals.gamification_medal.thank_medal, medals.gamification_medal.smile_medal, medals.gamification_medal.hot_medal,
+      medals.gamification_medal.nice_medal, medals.gamification_medal.comm_medal, medals.gamification_medal.grow_medal]
+      ];
+      var params = {
+      aCap: ['サンクスメダル', 'スマイルメダル', '熱血メダル',
+      'ナイスメダル', 'コミュニケーションメダル', '成長メダル']
+      };
+      rc.draw(items, params);
+      }
     <% end %>
+      <div><canvas width="600" height="500" id="sample"></canvas></div>
+    </div>
+
+
+    <!-- メダルログ情報 -->
+    <div id="medal-log">
+      <ul>
+      <% unless @medal_logs.nil? %>
+        <% @medal_logs.each do |log| %>
+          <li>
+          <%= log.updated_at %> : 
+          <%= log.user.login %>さんから
+          <%= link_to 'チケット番号' + log.issue_id.to_s, issue_path(log.issue_id) %>に
+          <%= log.rating_medal %>メダルが与えられました。
+          </li>
+      <% end %>
+      </ul>
+    <% end %>
+    </div>
   </div>
 </div>
 

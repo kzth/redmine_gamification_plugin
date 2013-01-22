@@ -1,0 +1,8 @@
+ul.tabs {list-style:none; width:500px;}
+ul.tabs li:first-child {border-left:1px solid #ccc;}
+ul.tabs li {float:left; border-right:1px solid #ccc; border-top:1px solid #ccc; background-color:#eee;}
+ul.tabs li.active {border-bottom:1px solid #fff; background-color:#fff; margin-bottom:-1px;}
+ul.tabs li a {display:block; padding:5px 10px; color:#777; letter-spacing:-1px; outline:none; text-decoration:none; font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;}
+ul.tabs li.active a {font-weight:600; color:#000;}
+div.tabs_content {width:500px; border:1px solid #ccc;}
+div.tabs_content > div {padding:20px; display:none;}
