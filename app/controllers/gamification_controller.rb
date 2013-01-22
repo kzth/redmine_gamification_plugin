@@ -158,7 +158,13 @@ class GamificationController < ApplicationController
     # medal table create
     user_medal = GamificationMedal.new({user_id: current_user_id})
     unless user_medal.save
-      redirect_to 'error'
+      redirect_to action: 'error'
+    end
+
+    # agile table create
+    user_agile = GamificationAgile.new({user_id: current_user_id})
+    unless user_agile.save
+      redirect_to action: 'error'
     end
 
     unless user.save
@@ -170,7 +176,8 @@ class GamificationController < ApplicationController
   end
 
   def tutorial
-    @user = Gamification.find_by_user_id(User.current.id)
+    current_user_id = User.current.id
+    @user = Gamification.find_by_user_id(current_user_id)
     user_tuts = GamificationTut.find_by_user_id(@user.user_id)
     @tuts = [
               {title: "プロジェクトに参加する", flag: user_tuts.project_f},
@@ -181,10 +188,42 @@ class GamificationController < ApplicationController
               {title: "メンバーを評価する", flag: user_tuts.rate_member_f}
             ]
 
+    user_agile = GamificationAgile.find_by_user_id(current_user_id)
     # アジャイルチェックリスト
-    #@check_list = [
-    #  {title: "", flag: }
-    #]
+    @check_list_a = [
+      {title: "アジャイル開発とは何か理解している", flag: user_agile.af1, name: 'af1'},
+      {title: "アジャイル開発以外の開発手法の問題点を理解している", flag: user_agile.af2, name: 'af2'},
+      {title: "4つのアジャイル宣言を理解している", flag: user_agile.af3, name: 'af3'},
+      {title: "リリース計画を行う", flag: user_agile.af4, name: 'af4'},
+      {title: "ユーザーストーリーを決める", flag: user_agile.af5, name: 'af5'},
+      {title: "タスクに分解する", flag: user_agile.af6, name: 'af6'},
+      {title: "イテレーションの設定をする", flag: user_agile.af7, name: 'af7'},
+      {title: "優先順位を決めて、開発を行う", flag: user_agile.af8, name: 'af8'}
+    ]
+
+    @check_list_b = [
+      {title: "プランニングポーカーを行う", flag: user_agile.bf1, name: 'bf1'},
+      {title: "タスクのストーリーポイントを決める", flag: user_agile.bf2, name: 'bf2'},
+      {title: "チームの理想時間を決める", flag: user_agile.bf3, name: 'bf3'},
+      {title: "ベロシティの計算をする", flag: user_agile.bf4, name: 'bf4'},
+      {title: "日時スクラムを行う", flag: user_agile.bf5, name: 'bf5'},
+    ]
+
+    @check_list_c = [
+      {title: "バージョン管理システムを利用する", flag: user_agile.cf1, name: 'cf1'},
+      {title: "テスト駆動開発を行う", flag: user_agile.cf2, name: 'cf2'},
+      {title: "ペアプログラミングを行う", flag: user_agile.cf3, name: 'cf3'},
+    ]
+  end
+
+  def update_agile
+    current_user_id = User.current.id
+    user_agile = GamificationAgile.find_by_user_id(current_user_id)
+    params[:list].each_pair do |key, value|
+      user_agile.update_attribute(key, value)
+    end
+    flash['notice'] = '更新しました'
+    redirect_to action: 'tutorial'
   end
 
   def badges

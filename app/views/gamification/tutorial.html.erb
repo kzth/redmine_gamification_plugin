@@ -1,22 +1,40 @@
-<style>
-div#tuts-list {
-  font-size: 24px;
-  margin: 10px 20px;
-  padding-right: 250px;
-}
+<%= stylesheet_link_tag 'tutorial.css', {plugin: 'gamification', media: 'screen'} %>
 
-div#tuts-list div {
-  padding: 5px;
-  border: 1px solid #111111;
-}
-</style>
-
+<%= form_tag({action: 'update_agile'}) do %>
 <div id="agile-check">
   <h2>アジャイル型PBLチェックリスト</h2>
+  <%= submit_tag '更新' %>
   <h4>A. 初心者リスト</h4>
+  <ul>
+  <% @check_list_a.each do |l| %>
+    <li>
+    <%= check_agile(l) %>
+    <%= l[:title] %>
+    </li>
+  <% end %>
+  </ul>
+
   <h4>B. 中級者リスト</h4>
+  <ul>
+  <% @check_list_b.each do |l| %>
+    <li>
+    <%= check_agile(l) %>
+    <%= l[:title] %>
+    </li>
+  <% end %>
+  </ul>
+
   <h4>C. 上級者リスト</h4>
+  <ul>
+  <% @check_list_c.each do |l| %>
+    <li>
+    <%= check_agile(l) %>
+    <%= l[:title] %>
+    </li>
+  <% end %>
+  </ul>
 </div>
+<% end %>
 
 <h2>ゲーミフィケーション機能チュートリアル</h2>
 

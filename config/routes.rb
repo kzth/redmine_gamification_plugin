@@ -1,6 +1,7 @@
 # Plugin's routes
 # See: http://guides.rubyonrails.org/routing.html
 
+post 'gamification/update_agile' => 'gamification#update_agile'
 get 'gamification/member/:user_id' => 'gamification#member'
 get 'gamification/member' => 'gamification#member'
 post 'gamification/save_goal' => 'gamification#save_goal'
