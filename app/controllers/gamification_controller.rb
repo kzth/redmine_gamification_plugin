@@ -14,7 +14,7 @@ class GamificationController < ApplicationController
     @user = Gamification.find_by_user_id(current_user_id)
 
     if GamificationLog.exists?({ to_user_id: current_user_id})
-      @medal_logs = GamificationLog.where('to_user_id = ?', current_user_id).order(:updated_at).reverse_order.limit(10)
+      @medal_logs = GamificationLog.where('to_user_id = ?', current_user_id).order(:updated_at).reverse_order
     end
 
     if session[:point]
@@ -217,11 +217,64 @@ class GamificationController < ApplicationController
   end
 
   def update_agile
+    if params[:list].nil?
+      flash['error'] = '何かチェックしてください'
+      redirect_to action: 'tutorial'
+      return
+    end
     current_user_id = User.current.id
     user_agile = GamificationAgile.find_by_user_id(current_user_id)
     params[:list].each_pair do |key, value|
       user_agile.update_attribute(key, value)
     end
+
+    af = 8
+    bf = 5
+    cf = 3
+    i = 0
+    agile_f = 0
+    f = ''
+
+    while i < af
+      f = 'af' + (i+0).to_s
+      if user_agile[f.to_sym] == 0
+        agile_f = 0
+        break
+      end
+      agile_f = 1
+      i += 1
+    end
+
+    i = 0
+    if agile_f == 1
+      while i < bf
+        f = 'bf' + (i+0).to_s
+        if user_agile[f.to_sym] == 0
+          agile_f = 1
+          break
+        end
+        agile_f = 2
+        i += 1
+      end
+    end
+
+    i = 0
+    if agile_f == 2
+      while i < cf
+        f = 'cf' + (i+0).to_s
+        if user_agile[f.to_sym] == 0
+          agile_f = 2
+          break
+        end
+        agile_f = 3
+        i += 1
+      end
+    end
+
+    user = Gamification.find_by_user_id(current_user_id)
+    user.agile_level = agile_f
+    user.save
+
     flash['notice'] = '更新しました'
     redirect_to action: 'tutorial'
   end
