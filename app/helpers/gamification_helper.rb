@@ -45,11 +45,11 @@ module GamificationHelper
     when 0
       '-'
     when 1
-      '初心者'
+      '入門'
     when 2
-      '中級者'
+      '中級'
     when 3
-      '上級者'
+      '上級'
     end
   end
 end
